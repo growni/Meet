@@ -1,25 +1,36 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import Register from './pages/Register'
+import Login from './pages/Login';
+import Matching from './pages/Matching';
+import { BrowserRouter as Router, Routes, Route } from 'react-router';
+import {jwtDecode} from 'jwt-decode';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            // Decode the token and set the current user
+            const decoded = jwtDecode(token);
+            setCurrentUser(decoded.user);
+        }
+    }, []);
+
+    return (
+        <Router>
+            <Routes>
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login setCurrentUser={setCurrentUser} />} />
+                <Route
+                    path="/matching"
+                    element={<Matching userData={currentUser} setCurrentUser={setCurrentUser} />}
+                />
+                {/* Add other routes here */}
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
